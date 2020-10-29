@@ -1,0 +1,24 @@
+name: PHP_CodeSniffer Action
+description: Lint your PHP code with PHP_CodeSniffer
+author: Pieter Maene
+branding:
+  icon: shield
+  color: yellow
+
+inputs:
+  github-token:
+    description: The installation access token for the job
+    default: ${{ github.token }}
+    required: true
+
+  ignore-warnings:
+    description: Whether annotations are added for warnings
+    default: "true"
+    required: false
+
+runs:
+  using: docker
+  image: Dockerfile
+  env:
+    GITHUB_TOKEN: ${{ inputs.github-token }}
+    IGNORE_WARNINGS: ${{ inputs.ignore-warnings }}
