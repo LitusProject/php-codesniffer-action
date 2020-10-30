@@ -2,9 +2,17 @@ package internal
 
 import (
 	"errors"
+	"fmt"
 
-	"github.com/google/go-github/v32/github"
 	"github.com/spf13/viper"
+)
+
+type GitHubLogLevel string
+
+const (
+	GitHubLogLevelDebug   GitHubLogLevel = "debug"
+	GitHubLogLevelWarning GitHubLogLevel = "warning"
+	GitHubLogLevelError   GitHubLogLevel = "error"
 )
 
 type Report struct {
@@ -28,36 +36,37 @@ type Report struct {
 	} `json:"files"`
 }
 
-func (r *Report) CreateCheckRunAnnotations() ([]*github.CheckRunAnnotation, error) {
-	var as []*github.CheckRunAnnotation
+func (r *Report) CreateMessages() ([]string, error) {
+	var ms []string
 	for k, v := range r.Files {
 		for _, m := range v.Messages {
 			if m.Type == "WARNING" && viper.GetBool("ignore-warnings") {
 				continue
 			}
 
-			var l string
+			var l GitHubLogLevel
 			switch m.Type {
 			case "ERROR":
-				l = "failure"
+				l = GitHubLogLevelError
 			case "WARNING":
-				l = "warning"
+				l = GitHubLogLevelWarning
 
 			default:
 				return nil, errors.New("invalid report message type")
 			}
 
-			a := &github.CheckRunAnnotation{
-				Path:            github.String(k),
-				StartLine:       github.Int(m.Line),
-				EndLine:         github.Int(m.Line),
-				AnnotationLevel: github.String(l),
-				Message:         github.String(m.Message),
-			}
-
-			as = append(as, a)
+			ms = append(
+				ms,
+				fmt.Sprintf(
+					"::%s file=%s,line=%d::%s",
+					l,
+					k,
+					m.Line,
+					m.Message,
+				),
+			)
 		}
 	}
 
-	return as, nil
+	return ms, nil
 }
