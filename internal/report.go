@@ -3,6 +3,7 @@ package internal
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -62,7 +63,7 @@ func (r *Report) CreateMessages() ([]string, error) {
 					l,
 					k,
 					m.Line,
-					m.Message,
+					strings.ReplaceAll(m.Message, "\n", "%0A"),
 				),
 			)
 		}
