@@ -10,7 +10,7 @@ ENV CGO_ENABLED=0
 RUN go get -d -v ./... && \
   go install -v ./...
 
-FROM litusproject/php_codesniffer:latest AS php_codesniffer
+FROM ghcr.io/litusproject/php_codesniffer:latest AS php_codesniffer
 
 COPY --from=golang /go/bin/php-codesniffer-action /usr/bin/
 
