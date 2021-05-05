@@ -18,7 +18,7 @@ inputs:
 
 runs:
   using: docker
-  image: Dockerfile
+  image: docker://ghcr.io/litusproject/php-codesniffer-action:latest
   env:
     GITHUB_TOKEN: ${{ inputs.github-token }}
     IGNORE_WARNINGS: ${{ inputs.ignore-warnings }}
